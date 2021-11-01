@@ -1,0 +1,27 @@
+{
+  "name": "cosmostarter_airdrop",
+  "version": "0.0.1",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "dev": "nodemon main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gachouchani1999/cosmostarter_airdrop.git"
+  },
+  "author": "gecko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gachouchani1999/cosmostarter_airdrop/issues"
+  },
+  "homepage": "https://github.com/gachouchani1999/cosmostarter_airdrop#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "nodemon": "^2.0.14",
+    "sqlite3": "^5.0.2"
+  }
+}
