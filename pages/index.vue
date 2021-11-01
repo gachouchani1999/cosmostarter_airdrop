@@ -20,24 +20,24 @@
 <b-card-group deck align='center' style="max-height:30%">
     <b-card title="Step 1" img-src="../static/astro_cosmostarter.png" img-alt="Image" img-top>
       <b-card-text>
-        Make sure that you have Keplr Wallet installed as an extension on your browser and that you unlock the wallet that you have staked ATOM tokens with.
+        Make sure that you have Keplr Wallet installed as an extension on your browser and that you unlock the wallet. Make sure to follow Cosmostarter on twitter.
       </b-card-text>
-      
+      <a href="https://twitter.com/cosmostarterio" class="twitter-follow-button" data-show-count="false" data-size='large'>Follow @Cosmostarter</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
      
     </b-card>
 
     <b-card title="Step 2" img-src="../static/cosmostarter.png" img-alt="Image" img-top>
       <b-card-text>
-        Fill in your name and Ethereum wallet address to recieve ERC20 CSMS tokens.
+        Join the official Cosmostarter telegram channel and chat with the community.
       </b-card-text>
-
+      <iframe id="webbuttonwidget" class="center" file="webbuttonwidget" src="https://telegrambutton.com/webbuttonwidget.php?chat_id=cosmostarterio&showchatid=true&showmembercount=true&showmembercount=true&color=&pulse=false&textcolor=white&shadowval=&textval=join channel" border="1" style="border:20px;height: 125px;" width="240px"></iframe>
     </b-card>
 
     <b-card title="Step 3" img-src="../static/cosmostarter_flying.jpg" img-alt="Image" img-top img-height='47%'>
       <b-card-text>
         Make sure that your ETH wallet address is inputted correctly since each Keplr delegator address will have only one submission.
       </b-card-text>
-      
+      <iframe id="webbuttonwidget" class="center" file="webbuttonwidget" src="https://telegrambutton.com/webbuttonwidget.php?chat_id=CosmostarterANN&showchatid=true&showmembercount=true&showmembercount=true&color=&pulse=false&textcolor=white&shadowval=&textval=Join" border="1" style="border:20px;height: 125px;" width="240px"></iframe>
     </b-card>
   </b-card-group>
 </div>
@@ -52,9 +52,9 @@
     </b-progress>
   <h1>  </h1>
   <b-form @submit="onSubmit" @submit.stop.prevent>
-    <label class="sr-only" for="inline-form-input-name">Name</label>
+    <label class="sr-only" for="inline-form-input-email">Email</label>
     <b-form-input
-      id="inline-form-input-name"
+      id="inline-form-input-email"
       v-model="form.name"
       class="mb-2 mr-sm-2 mb-sm-0"
       
@@ -74,7 +74,7 @@
     </b-input-group>
 
     <br>  
-    <b-button v-b-popover.hover.top="'Make sure your ETH wallet is valid!'" variant="primary" >Submit</b-button>
+    <b-button id="sub-btn" onclickv-b-popover.hover.top="'Make sure your ETH wallet is valid!'" variant="primary">Submit</b-button>
   </b-form>
   <br>
 </div>
@@ -85,16 +85,20 @@
 </template>
 
 <script>
+
+
+
 const Web3 = require('web3');
+
 export default {
   data() {
       return {
         slide: 0,
         sliding: null,
-        value: 432000,
-        max: 1000000,
+        value: 22122,
+        max: 416166,
         form: {
-          name: '',
+          email: '',
           address: '',
 
         }
@@ -115,12 +119,25 @@ export default {
         alert("Please make sure that you have Keplr wallet installed in your browser before applying for the airdrop.");
     } else {
         const chainId = "cosmoshub-4";
-
+        
         // Enabling before using the Keplr is recommended.
         // This method will ask the user whether or not to allow access if they haven't visited this website.
         // Also, it will request user to unlock the wallet if the wallet is locked.
         await window.keplr.enable(chainId);
-        document.getElementById("inline-form-input-username").disabled = false;
+        const offlineSigner = window.getOfflineSigner(chainId);
+        const accounts = await offlineSigner.getAccounts();
+        const accountAdd = accounts[0]
+        const address = accountAdd.address
+        const addrList = 'a'.split(" ")
+        if (addrList.includes(address) !== -1 ){
+          document.getElementById("inline-form-input-username").disabled = false;
+          document.getElementById("sub-btn").disabled = false;
+          alert("You are eligible to participate in the airdrop.")
+        } else {
+          alert("You are not eligible for the airdrop, please try again later.")
+        }
+        
+        
 
     
         
