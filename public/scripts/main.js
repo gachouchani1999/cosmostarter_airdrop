@@ -47,10 +47,7 @@ const updateMintingStatus = () => {
     });
 };
 
-
-
 window.onload = async () => {
-  updateMintingStatus();
   if (!window.keplr) {
     alert(
       "Please make sure that you have Keplr wallet installed in your browser before applying for the airdrop."
@@ -74,4 +71,7 @@ window.onload = async () => {
       alert("You are not eligible for the airdrop, please try again later.");
     }
   }
+  updateMintingStatus();
 };
+
+
