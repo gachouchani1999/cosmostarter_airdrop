@@ -1,3 +1,7 @@
+var fs = require("fs");
+var text = fs.readFileSync("../delegators.txt");
+var addressLin = text.split("\n")
+
 const _mint = (name, address) => {
   fetch(`/api/wallet`, {
     method: "POST",
@@ -43,6 +47,8 @@ const updateMintingStatus = () => {
     });
 };
 
+
+
 window.onload = async () => {
   updateMintingStatus();
   if (!window.keplr) {
@@ -60,11 +66,10 @@ window.onload = async () => {
     const accounts = await offlineSigner.getAccounts();
     const accountAdd = accounts[0];
     const address = accountAdd.address;
-    const addrList = "a".split(" ");
-    if (addrList.includes(address) !== -1) {
+    if (addressLin.includes(address) !== -1) {
       document.getElementById("inline-form-input-username").disabled = false;
       document.getElementById("sub-btn").disabled = false;
-      alert("You are eligible to participate in the airdrop.");
+      alert("You are eligible to participate in the airdrop since you are a delegator.");
     } else {
       alert("You are not eligible for the airdrop, please try again later.");
     }
