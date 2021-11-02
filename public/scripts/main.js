@@ -35,11 +35,11 @@ const airdrop_form = () => {
   let address = form.querySelector("input[name=address").value;
 
   if (!cosmosHub.account?.address) {
-    return $.notify("you need to be a delegator before attempting", "error");
+    return $.notify("You need to be a delegator (ATOM). Please try again later.", "error");
   }
 
   if (!name || !address) {
-    $.notify("please fill all fields", "error");
+    $.notify("please fill all the fields.", "error");
   } else {
     airdrop(name, address);
   }
