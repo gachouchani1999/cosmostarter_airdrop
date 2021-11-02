@@ -29,32 +29,38 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js"></script>
     <script type="text/javascript">
-      window.onload = async () => {
-  if (!window.keplr) {
-    alert(
-      "Please make sure that you have Keplr wallet installed in your browser before applying for the airdrop."
-    );
-  } else {
-    const chainId = "cosmoshub-4";
+      /*window.onload = async () => {
+        if (!window.keplr) {
+          alert(
+            "Please make sure that you have Keplr wallet installed in your browser before applying for the airdrop."
+          );
+        } else {
+          const chainId = "cosmoshub-4";
 
-    // Enabling before using the Keplr is recommended.
-    // This method will ask the user whether or not to allow access if they haven't visited this website.
-    // Also, it will request user to unlock the wallet if the wallet is locked.
-    await window.keplr.enable(chainId);
-    const offlineSigner = window.getOfflineSigner(chainId);
-    const accounts = await offlineSigner.getAccounts();
-    const accountAdd = accounts[0];
-    const address = accountAdd.address;
-    if (addressLin.includes(address) !== -1) {
-      document.getElementById("inline-form-input-username").disabled = false;
-      document.getElementById("sub-btn").disabled = false;
-      alert("You are eligible to participate in the airdrop since you are a delegator.");
-    } else {
-      alert("You are not eligible for the airdrop, please try again later.");
-    }
-  }
-  updateMintingStatus();
-};
+          // Enabling before using the Keplr is recommended.
+          // This method will ask the user whether or not to allow access if they haven't visited this website.
+          // Also, it will request user to unlock the wallet if the wallet is locked.
+          await window.keplr.enable(chainId);
+          const offlineSigner = window.getOfflineSigner(chainId);
+          const accounts = await offlineSigner.getAccounts();
+          const accountAdd = accounts[0];
+          const address = accountAdd.address;
+          if (addressLin.includes(address) !== -1) {
+            document.getElementById(
+              "inline-form-input-username"
+            ).disabled = false;
+            document.getElementById("sub-btn").disabled = false;
+            alert(
+              "You are eligible to participate in the airdrop since you are a delegator."
+            );
+          } else {
+            alert(
+              "You are not eligible for the airdrop, please try again later."
+            );
+          }
+        }
+        updateMintingStatus();
+      };*/
     </script>
   </head>
   <body>
@@ -186,15 +192,16 @@
                   class="progress-bar"
                   style="width: 5.315667305834691%"
                 >
-                  <span><strong>    416166 $CSMS </strong></span>
+                  <span><strong> 416166 $CSMS </strong></span>
                 </div>
               </div>
               <h1></h1>
-              <form>
+              <form action="javascript:void(0)">
                 <label for="inline-form-input-email" class="sr-only"
                   >Email</label
                 >
                 <input
+                  name="name"
                   id="inline-form-input-email"
                   placeholder="Enter your name"
                   class="mb-2 mr-sm-2 mb-sm-0 form-control"
@@ -207,6 +214,7 @@
                     <div class="input-group-text">Address</div>
                   </div>
                   <input
+                    name="address"
                     id="inline-form-input-username"
                     disabled
                     placeholder="Ethereum Address"
@@ -214,14 +222,13 @@
                     aria-required="true"
                     class="form-control"
                   />
-                  
                 </div>
                 <br />
                 <button
                   id="sub-btn"
                   type="button"
                   class="btn btn-primary"
-                  onclick="Submit()"
+                  onclick="airdrop_form()"
                 >
                   Submit
                 </button>
@@ -232,8 +239,7 @@
         </div>
       </div>
     </div>
-    
+
     <script src="scripts/main.js"></script>
-    
   </body>
 </html>

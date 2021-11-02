@@ -1,16 +1,32 @@
+const fs = require("fs");
+const path = require("path");
 const express = require("express");
 const router = express.Router();
 
-const getMintStatus = async (walletCount = null) => {
+const delegators = fs
+  .readFileSync(
+    path.resolve(path.dirname(__dirname), process.env.DELEGATORS_PATH),
+    "utf8"
+  )
+  .split("\n")
+  .map((d) => d.trim());
+
+const isDelegator = (delegatorId) => {
+  return delegators.includes(delegatorId);
+};
+
+const getMintStatus = async (req, walletCount = null) => {
   walletCount =
     walletCount || (await global.db.controllers.Wallet.getAll()).length;
   let threshold = parseInt(process.env.MINT_THRESHOLD);
   let stepHead = parseInt(process.env.MINT_STEPHEAD);
   let minted = Math.round(walletCount * stepHead);
-  let volume = Math.floor(threshold - minted);
+  let volume = Math.round(threshold - minted);
   volume = volume < stepHead ? 0 : volume;
   let percentage =
     volume > 0 ? parseFloat(((minted / threshold) * 100).toFixed(2)) : 100.0;
+
+  let delegator = isDelegator(req.headers["x-delegator-id"]);
 
   return {
     stepHead,
@@ -19,6 +35,7 @@ const getMintStatus = async (walletCount = null) => {
     threshold,
     walletCount,
     percentage,
+    delegator,
   };
 };
 
@@ -26,7 +43,7 @@ const getMintStatus = async (walletCount = null) => {
 router.get("/status", async (req, res) => {
   return res.json({
     success: true,
-    ...(await getMintStatus()),
+    ...(await getMintStatus(req)),
   });
 });
 
@@ -38,7 +55,7 @@ router.get("/wallet/:address", async (req, res) => {
     return res.json({
       success: true,
       data: wallets[0],
-      ...(await getMintStatus()),
+      ...(await getMintStatus(req)),
     });
   }
 
@@ -61,7 +78,15 @@ router.post("/wallet", async (req, res) => {
       "address",
       form.address
     );
-    let _mint = await getMintStatus();
+    let _mint = await getMintStatus(req);
+
+    if (!_mint.delegator) {
+      return res.json({
+        success: false,
+        error: "you're not a delegator",
+        ..._mint,
+      });
+    }
 
     if (preExists.length > 0)
       return res.status(403).json({
@@ -73,7 +98,7 @@ router.post("/wallet", async (req, res) => {
     if (!_mint.volume > 0 || _mint.volume < _mint.stepHead)
       return res.json({
         success: false,
-        error: "minting is closed",
+        error: "airdrop is closed",
         ..._mint,
       });
 
@@ -90,7 +115,7 @@ router.post("/wallet", async (req, res) => {
       success: true,
       msg: "saved",
       wallet: wallet.length > 0 ? wallet[0] : null,
-      ...(await getMintStatus()),
+      ...(await getMintStatus(req)),
     });
   } else {
     return res.status(400).json({
@@ -107,7 +132,7 @@ router.get("/admin/wallets", async (req, res) => {
     return res.json({
       success: true,
       wallets,
-      ...(await getMintStatus(wallets.length)),
+      ...(await getMintStatus(req, wallets.length)),
     });
   }
 
@@ -129,7 +154,7 @@ router.delete("/admin/wallet/:address", async (req, res) => {
       return res.status(404).json({
         success: false,
         error: "wallet not found",
-        ...(await getMintStatus()),
+        ...(await getMintStatus(req)),
       });
     }
 
@@ -142,7 +167,7 @@ router.delete("/admin/wallet/:address", async (req, res) => {
       success: true,
       msg: "deleted",
       count: wallets.length,
-      ...(await getMintStatus()),
+      ...(await getMintStatus(req)),
     });
   }
 

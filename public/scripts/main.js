@@ -1,12 +1,12 @@
-var fs = require("fs");
-var text = fs.readFileSync("../delegators.txt");
-var addressLin = text.split("\n")
+// (function () {
+const cosmosHub = { account: null, chainId: "cosmoshub-4" };
 
-const _mint = (name, address) => {
+const airdrop = (name, address) => {
   fetch(`/api/wallet`, {
     method: "POST",
     headers: {
       "content-type": "application/x-www-form-urlencoded",
+      "x-delegator-id": cosmosHub.account?.address || null,
     },
     body: `name=${encodeURIComponent(name)}&address=${encodeURIComponent(
       address
@@ -17,7 +17,7 @@ const _mint = (name, address) => {
       if (!res.success) {
         $.notify(res.error, "error");
       } else {
-        $.notify("Minted successfully!", "success");
+        $.notify("Airdropped successfully!", "success");
       }
 
       if (res.threshold) {
@@ -29,16 +29,48 @@ const _mint = (name, address) => {
     });
 };
 
-const updateMintingStatus = () => {
-  fetch(`/api/status`)
+const airdrop_form = () => {
+  let form = document.querySelector("form");
+  let name = form.querySelector("input[name=name").value;
+  let address = form.querySelector("input[name=address").value;
+
+  if (!cosmosHub.account?.address) {
+    return $.notify("you need to be a delegator before attempting", "error");
+  }
+
+  if (!name || !address) {
+    $.notify("please fill all fields", "error");
+  } else {
+    airdrop(name, address);
+  }
+};
+
+const updateStatus = () => {
+  fetch(`/api/status`, {
+    headers: { "x-delegator-id": cosmosHub.account?.address || null },
+  })
     .then((res) => res.json())
     .then((res) => {
       if (!res.success) {
         $.notify(res.error, "error");
       }
-      "Minted successfully!", "success";
-
       if (res.threshold) {
+        if (res.delegator) {
+          document.getElementById(
+            "inline-form-input-username"
+          ).disabled = false;
+          document.getElementById("sub-btn").disabled = false;
+          $.notify(
+            "You are eligible to participate in the airdrop since you are a delegator.",
+            "success"
+          );
+        } else {
+          $.notify(
+            "You are not eligible for the airdrop, please try again later.",
+            "warn"
+          );
+        }
+
         $("div[role=progressbar]")
           .first()
           .css("width", `${res.percentage}%`)
@@ -49,29 +81,21 @@ const updateMintingStatus = () => {
 
 window.onload = async () => {
   if (!window.keplr) {
-    alert(
-      "Please make sure that you have Keplr wallet installed in your browser before applying for the airdrop."
+    $.notify(
+      "Please make sure that you have Keplr wallet installed in your browser before applying for the airdrop.",
+      "error"
     );
   } else {
-    const chainId = "cosmoshub-4";
-
     // Enabling before using the Keplr is recommended.
     // This method will ask the user whether or not to allow access if they haven't visited this website.
     // Also, it will request user to unlock the wallet if the wallet is locked.
-    await window.keplr.enable(chainId);
+    await window.keplr.enable(cosmosHub.chainId);
     const offlineSigner = window.getOfflineSigner(chainId);
     const accounts = await offlineSigner.getAccounts();
-    const accountAdd = accounts[0];
-    const address = accountAdd.address;
-    if (addressLin.includes(address) !== -1) {
-      document.getElementById("inline-form-input-username").disabled = false;
-      document.getElementById("sub-btn").disabled = false;
-      alert("You are eligible to participate in the airdrop since you are a delegator.");
-    } else {
-      alert("You are not eligible for the airdrop, please try again later.");
-    }
+    const account = accounts[0];
+    const { address } = account;
+    cosmosHub.account = account;
   }
-  updateMintingStatus();
+  updateStatus();
 };
-
-
+// })();
